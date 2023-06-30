@@ -2,14 +2,13 @@
 {
     public class Address
     {
-
-
+        internal object Location;
 
         public Guid Id { get; set; }
 
-        public string PhysicalAddress { set; get; }
+        public string? PhysicalAddress { set; get; }
 
-        public string PostalAddress { set; get; }   
+        public string ? PostalAddress { set; get; }   
 
         //Navigation Property
 

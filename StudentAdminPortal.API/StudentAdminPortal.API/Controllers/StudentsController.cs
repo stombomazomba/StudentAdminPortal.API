@@ -7,6 +7,7 @@ using AutoMapper;
 using System.Threading.Tasks;
 using Student = StudentAdminPortal.API.DataModels.Student;
 using StudentAdminPortal.API.DomainModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace StudentAdminPortal.API.Controllers
 {
@@ -16,8 +17,10 @@ namespace StudentAdminPortal.API.Controllers
     {
         private readonly IStudentRepository studentRepository;
         private readonly AutoMapper.IMapper mapper;
+        private readonly object student;
+        private readonly IImageRepository imageRepository;
 
-        public StudentsController(IStudentRepository studentRepos, AutoMapper.IMapper mapper)
+        public StudentsController(IStudentRepository studentRepos, AutoMapper.IMapper mapper, IImageRepository imageRepository )
         {
 
             this.studentRepository = studentRepos;
@@ -34,10 +37,9 @@ namespace StudentAdminPortal.API.Controllers
 
         }
 
-
         //Get Single student details
         [HttpGet]
-        [Route("[controller]/{studentId:guid}")]
+        [Route("[controller]/{studentId:guid}"),ActionName("GetstudentAsync")]
         public async Task<IActionResult> GetStudentAsync([FromRoute] Guid studentId)
         {
 
@@ -51,7 +53,6 @@ namespace StudentAdminPortal.API.Controllers
             }
             return Ok(mapper.Map<Student>(student));
         }
-
 
 
        //Update student details
@@ -89,9 +90,62 @@ namespace StudentAdminPortal.API.Controllers
             return NotFound();
         }
 
+        //Adding a new student 
+        [HttpPost]
+        [Route ("[controller]/Add")]
+        public async Task<IActionResult> AddStudentAsync([FromBody] [Required] AddStudentRequest request)
+        {
+
+            if (!ModelState.IsValid) // Check if the model state is valid
+            {
+                return BadRequest(ModelState); // Return bad request with validation errors
+            }
+
+            var student = await studentRepository.AddStudent(mapper.Map<DataModels.Student>(request));
+            return CreatedAtAction(nameof(GetStudentAsync),new { studentId = student.Id },
+                mapper.Map<DomainModels.Student>(student));
+
+        }
 
 
+        [HttpPost]
+        [Route("[controller]/{studentId:guid}/upload-image")]
+        public async Task<IActionResult> UploadImage([FromRoute] Guid studentId, IFormFile profileImage)
+        {
+             
+            var validExtensions = new List<string>
+            {
+                ".jpeg", ".png",".gif",".jpg",".mp4",".WEBM",".webm"
+            };
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                var extension = Path.GetExtension(profileImage.FileName);
+                if (validExtensions.Contains(extension))
+                {
+                    //Check if student exists
+                    if (await studentRepository.Exists(studentId))
 
+                    {
+                       
+                        var fileName = Guid.NewGuid() + Path.GetExtension(profileImage.FileName);
+                        //Upload the image to local storage
+                        var fileImagePath = await imageRepository.Upload(profileImage, fileName);
 
+                        //update the profile image path in the database
+                        if (await studentRepository.UpdateProfileImage(studentId, fileImagePath))
+                        {
+                            return Ok(fileImagePath);
+                        }
+
+                        return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading image");
+
+                    }
+
+                }
+                return BadRequest("Image not supported");
+            }
+
+            return NotFound();
+        }
     }
 }

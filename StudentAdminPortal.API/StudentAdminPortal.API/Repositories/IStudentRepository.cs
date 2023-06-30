@@ -1,6 +1,7 @@
 ﻿using StudentAdminPortal.API.DataModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace StudentAdminPortal.API.Repositories
 {
@@ -21,6 +22,11 @@ namespace StudentAdminPortal.API.Repositories
         Task<Student> UpdateStudent(Guid studendId, Student request);
 
         Task<Student> DeleteStudent(Guid studendId);
-     
+
+        Task<Student> AddStudent(Student request);
+
+        Task<bool> UpdateProfileImage(Guid studentId, string profileImageUrl);
+
+
     }
 }

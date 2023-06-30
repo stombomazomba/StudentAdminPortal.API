@@ -37,9 +37,11 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("StudentAdminPort
 builder.Services.AddScoped<IStudentRepository, SqlStudentRepository>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+builder.Services.AddScoped<IImageRepository, LocalStorageImageRepository>();
 
 
-    
+
+
 
 var app = builder.Build();
 
@@ -57,12 +59,12 @@ else
 
 app.UseHttpsRedirection();
 
-//app.UseStaticFiles();
-//app.UseStaticFiles(new StaticFileOptions
-//{
-//    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "Resources")),
-//    RequestPath = "/Resources"
-//});
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "Resources")),
+    RequestPath = "/Resources"
+});
 
 app.UseCors("MyPolicy"); 
 
@@ -73,4 +75,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
 

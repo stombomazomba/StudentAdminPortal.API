@@ -2,7 +2,7 @@
 {
     public class Gender
     {
-
+        internal object Name;
 
         public Guid Id { get; set; }
 

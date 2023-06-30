@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using StudentAdmin.API.Profiles.AfterMaps;
 using StudentAdminPortal.API.DomainModels;
+using StudentAdminPortal.API.Profiles.AfterMaps;
 using DataModels = StudentAdminPortal.API.DataModels;
 
 
@@ -19,6 +20,9 @@ namespace StudentAdminPortal.API.Profiles
 
             CreateMap<UpdateStudentRequest, DataModels.Student>()
                 .AfterMap<UpdateStudentRequestAfterMap>();
+
+            CreateMap<AddStudentRequest, DataModels.Student>()
+                .AfterMap<AddStudentRequestAfterMap>();
 
         }
     }

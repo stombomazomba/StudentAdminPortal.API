@@ -29,11 +29,9 @@ namespace StudentAdminPortal.API.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PhysicalAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("StudentId")
@@ -53,7 +51,7 @@ namespace StudentAdminPortal.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Desciption")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -90,7 +88,6 @@ namespace StudentAdminPortal.API.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("ProfileImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

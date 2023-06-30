@@ -1,10 +1,8 @@
-﻿namespace StudentAdminPortal.API.DataModels
+﻿namespace StudentAdminPortal.API.DomainModels
 {
-    public class Student
+    public class AddStudentRequest
     {
 
-
-        public Guid Id { get; set; }
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -15,16 +13,12 @@
 
         public long Mobile { get; set; }
 
-       public string? ProfileImageUrl { get; set; }
-
         public Guid GenderId { get; set; }
 
-        //Navigation Properties
+        public string PhysicalAddress { set; get; }
 
-        public Gender Gender { get; set; }
+        public string PostalAddress { set; get; }
 
-        public Address Address { get; set; }
-
-
+      //  public string ProfileImageUrl { get; set; }
     }
 }

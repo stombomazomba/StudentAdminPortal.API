@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Writers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace StudentAdminPortal.API.Repositories
 {
@@ -17,11 +18,11 @@ namespace StudentAdminPortal.API.Repositories
             this.context = context;
         }
 
-        
+
         public async Task<List<Student>> GetStudentsAsync()
         {
-          
-             return await context.Student.Include(nameof(Gender)).Include(nameof(Address)).ToListAsync();
+
+            return await context.Student.Include(nameof(Gender)).Include(nameof(Address)).ToListAsync();
         }
 
         public async Task<Student> GetStudentAsync(Guid studentId)
@@ -32,19 +33,19 @@ namespace StudentAdminPortal.API.Repositories
 
         public async Task<List<Gender>> GetGendersAsync()
         {
-           return await context.Gender.ToListAsync();
+            return await context.Gender.ToListAsync();
         }
 
         public async Task<bool> Exists(Guid studentId)
         {
-          return await context.Student.AnyAsync(x => x.Id == studentId);
+            return await context.Student.AnyAsync(x => x.Id == studentId);
         }
 
-        public  async Task<Student> UpdateStudent(Guid studendId, Student request)
+        public async Task<Student> UpdateStudent(Guid studendId, Student request)
         {
             var existingStudent = await GetStudentAsync(studendId);
 
-            if (existingStudent != null) 
+            if (existingStudent != null)
             {
                 existingStudent.FirstName = request.FirstName;
                 existingStudent.LastName = request.LastName;
@@ -57,7 +58,7 @@ namespace StudentAdminPortal.API.Repositories
 
                 await context.SaveChangesAsync();
                 return existingStudent;
-            
+
             }
             return null;
         }
@@ -74,5 +75,29 @@ namespace StudentAdminPortal.API.Repositories
             }
             return null;
         }
+
+        public async Task<Student> AddStudent(Student request)
+        {
+            var student = await context.Student.AddAsync(request);
+            await context.SaveChangesAsync();
+            return student.Entity;
+        }
+
+        public  async Task<bool> UpdateProfileImage(Guid studentId, string profileImageUrl)
+        {
+
+            var student = await GetStudentAsync(studentId);
+            if (student != null)
+            {
+             student.ProfileImageUrl = profileImageUrl;
+
+
+                await context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
     }
 }
+

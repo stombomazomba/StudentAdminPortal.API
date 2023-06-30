@@ -12,8 +12,8 @@ using StudentAdminPortal.API.DataModels;
 namespace StudentAdminPortal.API.Migrations
 {
     [DbContext(typeof(StudentAdminContext))]
-    [Migration("20230523100854_Initial migration")]
-    partial class Initialmigration
+    [Migration("20230630064329_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,11 +32,9 @@ namespace StudentAdminPortal.API.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PhysicalAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("StudentId")
@@ -56,7 +54,7 @@ namespace StudentAdminPortal.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Desciption")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -93,7 +91,6 @@ namespace StudentAdminPortal.API.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("ProfileImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
