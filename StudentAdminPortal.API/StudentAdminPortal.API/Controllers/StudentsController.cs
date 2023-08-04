@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Student = StudentAdminPortal.API.DataModels.Student;
 using StudentAdminPortal.API.DomainModels;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace StudentAdminPortal.API.Controllers
 {
@@ -20,12 +22,14 @@ namespace StudentAdminPortal.API.Controllers
         private readonly object student;
         private readonly IImageRepository imageRepository;
 
+      
         public StudentsController(IStudentRepository studentRepos, AutoMapper.IMapper mapper, IImageRepository imageRepository )
         {
 
             this.studentRepository = studentRepos;
             this.mapper = mapper;
-        }
+            this.imageRepository = imageRepository;
+        }   
 
         //Get All Students
         [HttpGet]
@@ -90,6 +94,7 @@ namespace StudentAdminPortal.API.Controllers
             return NotFound();
         }
 
+
         //Adding a new student 
         [HttpPost]
         [Route ("[controller]/Add")]
@@ -112,11 +117,12 @@ namespace StudentAdminPortal.API.Controllers
         [Route("[controller]/{studentId:guid}/upload-image")]
         public async Task<IActionResult> UploadImage([FromRoute] Guid studentId, IFormFile profileImage)
         {
-             
+
             var validExtensions = new List<string>
             {
-                ".jpeg", ".png",".gif",".jpg",".mp4",".WEBM",".webm"
+                ".jpeg", ".png",".gif",".jpg",
             };
+
             if (profileImage != null && profileImage.Length > 0)
             {
                 var extension = Path.GetExtension(profileImage.FileName);
@@ -126,10 +132,13 @@ namespace StudentAdminPortal.API.Controllers
                     if (await studentRepository.Exists(studentId))
 
                     {
-                       
+                        
+
                         var fileName = Guid.NewGuid() + Path.GetExtension(profileImage.FileName);
+
+
                         //Upload the image to local storage
-                        var fileImagePath = await imageRepository.Upload(profileImage, fileName);
+                       var fileImagePath = await imageRepository.Upload(profileImage, fileName);
 
                         //update the profile image path in the database
                         if (await studentRepository.UpdateProfileImage(studentId, fileImagePath))
@@ -147,5 +156,38 @@ namespace StudentAdminPortal.API.Controllers
 
             return NotFound();
         }
+
+
+
+        //public async Task<IActionResult> UploadImage([FromRoute] Guid studentId, IFormFile profileImage)
+        //{
+        //    // Check if student exists
+        //    if (await studentRepository.Exists(studentId))
+        //    {
+        //        // Check if profileImage is null or empty
+        //        if (profileImage != null && profileImage.Length > 0)
+        //        {
+        //            return BadRequest("Profile image is required.");
+        //        }
+
+        //        // Upload the image to local storage
+        //        var fileName = Guid.NewGuid() + Path.GetExtension(profileImage.FileName);
+        //       var fileImagePath = await imageRepository.Upload(profileImage, fileName);
+
+        //        // Update the profile image path in the database
+        //        if (await studentRepository.UpdateProfileImage(studentId, fileImagePath))
+        //        {
+        //            return Ok(fileImagePath);
+        //        }
+
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "Error on uploading Image");
+        //    }
+
+        //    return NotFound();
+        //}
+
+
+
+
     }
 }

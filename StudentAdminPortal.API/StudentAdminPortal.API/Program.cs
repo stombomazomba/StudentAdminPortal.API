@@ -8,40 +8,29 @@ using AutoMapper;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 // Add services to the container.
-builder.Services.AddCors(options =>
+builder.Services.AddCors(option =>
 {
-    options.AddPolicy("MyPolicy", builder =>
+    option.AddPolicy("MyPolicy", builder =>
     {
-        builder.WithOrigins("*")
-            .AllowAnyHeader()
-            .WithMethods("GET", "PUT", "POST", "DELETE")
-            .WithExposedHeaders("*");
-         builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        builder.WithOrigins("http://localhost:4200").AllowAnyHeader().WithMethods("GET", "PUT", "POST", "DELETE").WithExposedHeaders("*");
+        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
-
-
 builder.Services.AddControllers();
-//builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
-
+builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<StudentAdminContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("StudentAdminPortalDb")));
 
 builder.Services.AddScoped<IStudentRepository, SqlStudentRepository>();
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
-
 builder.Services.AddScoped<IImageRepository, LocalStorageImageRepository>();
 
-
-
-
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
@@ -65,6 +54,14 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "Resources")),
     RequestPath = "/Resources"
 });
+
+app.UseCors("MyPolicy");
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
 
 app.UseCors("MyPolicy"); 
 
