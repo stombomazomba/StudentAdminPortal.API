@@ -112,7 +112,7 @@ namespace StudentAdminPortal.API.Controllers
 
         }
 
-
+        // Uploading an image
         [HttpPost]
         [Route("[controller]/{studentId:guid}/upload-image")]
         public async Task<IActionResult> UploadImage([FromRoute] Guid studentId, IFormFile profileImage)
